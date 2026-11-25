@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>رحلة الـ 43 يوماً — الأناجيل الأربعة</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1c2026;
+      --muted: #5c6573;
+      --accent: #2563eb;
+      --accent-soft: #e8effe;
+      --border: #e5e7eb;
+      --font-size: 18px;
+    }
+    [data-theme="dark"] {
+      --bg: #11141a;
+      --card: #1a1f29;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --accent: #60a5fa;
+      --accent-soft: #1e293b;
+      --border: #2c3444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.85;
+      padding: 16px;
+    }
+    .container { max-width: 760px; margin: 0 auto; }
+    .topbar {
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .controls button {
+      background: var(--card); color: var(--text);
+      border: 1px solid var(--border); padding: 6px 12px;
+      border-radius: 8px; cursor: pointer; font-weight: 600;
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px; margin-bottom: 16px;
+    }
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; text-align: center; margin-top: 12px;
+    }
+    .stat-box {
+      background: var(--accent-soft); padding: 12px; border-radius: 12px;
+    }
+    .stat-val { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+    .progress-bar {
+      width: 100%; height: 10px; background: var(--border);
+      border-radius: 999px; overflow: hidden; margin-top: 10px;
+    }
+    .progress-fill {
+      height: 100%; background: var(--accent); width: 0%; transition: width 0.25s;
+    }
+    .day-header {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; flex-wrap: wrap;
+    }
+    .badge {
+      background: var(--accent-soft); color: var(--accent);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.9rem; font-weight: 700;
+    }
+    .scripture-box {
+      margin-top: 14px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: var(--font-size);
+    }
+    .chapter-heading {
+      font-weight: 700;
+      color: var(--accent);
+      margin: 14px 0 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+    }
+    .verse-num {
+      font-size: 0.8em;
+      font-weight: 700;
+      color: var(--accent);
+      margin-left: 4px;
+    }
+    .reflection {
+      background: var(--accent-soft); padding: 14px;
+      border-radius: 12px; margin-top: 14px;
+      font-size: calc(var(--font-size) - 1px);
+    }
+    .actions {
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      gap: 10px; margin-top: 18px;
+    }
+    .btn {
+      padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); cursor: pointer; font-weight: 600;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    .days-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+      gap: 8px; margin-top: 12px;
+    }
+    .day-pill {
+      padding: 8px 0; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); cursor: pointer; font-weight: 600;
+    }
+    .day-pill.done { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .day-pill.active { outline: 2px solid var(--accent); outline-offset: 1px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <h2 style="margin:0;">الأناجيل الأربعة في 43 يوماً</h2>
+        <small style="color:var(--muted);">متى • مرقس • لوقا • يوحنا (النصوص الكاملة)</small>
+      </div>
+      <div class="controls">
+        <button onclick="changeFont(-2)">أ-</button>
+        <button onclick="changeFont(2)">أ+</button>
+        <button onclick="toggleTheme()">فاتح / داكن</button>
+      </div>
+    </div>
+
+    <div class="card" id="installBanner" style="display:none; justify-content:space-between; align-items:center; gap:10px;">
+      <div>
+        <strong>📲 ثبّت التطبيق على جهازك</strong>
+        <div style="font-size:0.9rem; color:var(--muted);">يفتح بسرعة ويشتغل أوفلاين بدون إنترنت</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-primary" id="installBtn">تثبيت</button>
+        <button class="btn" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
+      </div>
+    </div>
+
+    <div class="card" id="iosHint" style="display:none; font-size:0.92rem;">
+      لتثبيت التطبيق على الآيفون: اضغط على زر المشاركة <strong>(⬆️)</strong> في المتصفح ثم اختر <strong>«إضافة إلى الشاشة الرئيسية»</strong>.
+    </div>
+
+    <div class="card">
+      <div style="display:flex; justify-content:space-between;">
+        <span>نسبة الإنجاز</span>
+        <strong id="percentLabel">0%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="stats">
+        <div class="stat-box"><div class="stat-val" id="completedCount">0</div><small>أيام منجزة</small></div>
+        <div class="stat-box"><div class="stat-val" id="streakCount">0</div><small>أيام متتالية</small></div>
+        <div class="stat-box"><div class="stat-val">43</div><small>إجمالي الأيام</small></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="day-header">
+        <span class="badge" id="dayBadge">اليوم 1</span>
+        <span class="badge" id="gospelBadge">متى</span>
+      </div>
+      <h3 id="dayTitle" style="margin:12px 0 6px;"></h3>
+      <button class="btn" id="toggleTextBtn" onclick="toggleScripture()">إخفاء / إظهار النص</button>
+
+      <div class="scripture-box" id="scriptureBox"></div>
+
+      <div class="reflection">
+        <strong>تأمل اليوم:</strong>
+        <div id="dayReflection" style="margin-top:4px;"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="prevDay()">‹ السابق</button>
+        <button class="btn btn-primary" id="completeBtn" onclick="toggleComplete()">إتمام اليوم</button>
+        <button class="btn" onclick="nextDay()">التالي ›</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>قائمة الأيام (1 – 43)</strong>
+      <div class="days-grid" id="daysGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    const plan = buildPlan();
+    let gospelsData = {};
+    let currentDay = 1;
+    let showText = true;
+    let completed = JSON.parse(localStorage.getItem("gospels43_done") || "[]");
+    let fontSize = Number(localStorage.getItem("gospels43_font") || 18);
+    let theme = localStorage.getItem("gospels43_theme") || "light";
+
+    applyTheme();
+    applyFont();
+    loadGospels();
+
+    async function loadGospels() {
+      try {
+        const res = await fetch("./gospels-texts.json");
+        if (res.ok) {
+          gospelsData = await res.json();
+        }
+      } catch (e) {
+        gospelsData = {};
+      }
+      render();
+    }
+
+    function buildPlan() {
+      const specs = [
+        { gospel: "متى", days: 14, totalChapters: 28 },
+        { gospel: "مرقس", days: 8, totalChapters: 16 },
+        { gospel: "لوقا", days: 12, totalChapters: 24 },
+        { gospel: "يوحنا", days: 9, totalChapters: 21 }
+      ];
+      const list = [];
+      let dayNum = 1;
+
+      for (const s of specs) {
+        let startCh = 1;
+        for (let i = 0; i < s.days; i++) {
+          const remainingDays = s.days - i;
+          const remainingCh = s.totalChapters - startCh + 1;
+          const count = Math.ceil(remainingCh / remainingDays);
+          const endCh = startCh + count - 1;
+          const chaptersList = [];
+          for (let c = startCh; c <= endCh; c++) chaptersList.push(c);
+
+          list.push({
+            day: dayNum,
+            gospel: s.gospel,
+            chaptersList,
+            chaptersLabel: startCh === endCh ? `الفصل ${startCh}` : `الفصول ${startCh} – ${endCh}`,
+            title: `إنجيل ${s.gospel} — ${startCh === endCh ? `فصل ${startCh}` : `فصول ${startCh} إلى ${endCh}`}`,
+            reflection: `تأمل في قراءة اليوم من إنجيل ${s.gospel} (${startCh === endCh ? `فصل ${startCh}` : `فصول ${startCh}–${endCh}`}).`
+          });
+          startCh = endCh + 1;
+          dayNum++;
+        }
+      }
+      return list;
+    }
+
+    function renderScripture(item) {
+      const box = document.getElementById("scriptureBox");
+      if (!showText) {
+        box.style.display = "none";
+        return;
+      }
+      box.style.display = "block";
+
+      const book = gospelsData[item.gospel];
+      if (!book) {
+        box.innerHTML = `<p style="color:var(--muted); margin:0;">أضف ملف <strong>gospels-texts.json</strong> في نفس المجلد لعرض نصوص ${item.title} كاملة.</p>`;
+        return;
+      }
+
+      let html = "";
+      for (const ch of item.chaptersList) {
+        const chapterObj = book[String(ch)];
+        html += `<div class="chapter-heading">إنجيل ${item.gospel} — الفصل ${ch}</div>`;
+        if (!chapterObj) {
+          html += `<p style="color:var(--muted);">نص الفصل ${ch} غير متوفر بعد في ملف البيانات.</p>`;
+          continue;
+        }
+        if (typeof chapterObj === "string") {
+          html += `<p>${chapterObj}</p>`;
+        } else {
+          const verses = Object.keys(chapterObj)
+            .sort((a, b) => Number(a) - Number(b))
+            .map(v => `<span class="verse-num">${v}</span>${chapterObj[v]}`)
+            .join(" ");
+          html += `<p>${verses}</p>`;
+        }
+      }
+      box.innerHTML = html;
+    }
+
+    function toggleScripture() {
+      showText = !showText;
+      renderScripture(plan[currentDay - 1]);
+    }
+
+    function calcStreak(doneArr) {
+      if (!doneArr.length) return 0;
+      const set = new Set(doneArr);
+      let streak = 0;
+      for (let d = currentDay; d >= 1; d--) {
+        if (set.has(d)) streak++;
+        else break;
+      }
+      if (streak === 0) {
+        const lastDone = Math.max(...doneArr);
+        for (let d = lastDone; d >= 1; d--) {
+          if (set.has(d)) streak++;
+          else break;
+        }
+      }
+      return streak;
+    }
+
+    function render() {
+      const item = plan[currentDay - 1];
+      document.getElementById("dayBadge").textContent = `اليوم ${item.day}`;
+      document.getElementById("gospelBadge").textContent = `إنجيل ${item.gospel}`;
+      document.getElementById("dayTitle").textContent = `${item.title} (${item.chaptersLabel})`;
+      document.getElementById("dayReflection").textContent = item.reflection;
+
+      renderScripture(item);
+
+      const isDone = completed.includes(currentDay);
+      document.getElementById("completeBtn").textContent = isDone ? "✓ تم إتمام اليوم" : "إتمام اليوم";
+
+      const pct = Math.round((completed.length / 43) * 100);
+      document.getElementById("percentLabel").textContent = `${pct}%`;
+      document.getElementById("progressFill").style.width = `${pct}%`;
+      document.getElementById("completedCount").textContent = completed.length;
+      document.getElementById("streakCount").textContent = calcStreak(completed);
+
+      const grid = document.getElementById("daysGrid");
+      grid.innerHTML = "";
+      plan.forEach(d => {
+        const pill = document.createElement("button");
+        pill.className = "day-pill" +
+          (completed.includes(d.day) ? " done" : "") +
+          (d.day === currentDay ? " active" : "");
+        pill.textContent = d.day;
+        pill.onclick = () => { currentDay = d.day; render(); };
+        grid.appendChild(pill);
+      });
+    }
+
+    function toggleComplete() {
+      if (completed.includes(currentDay)) {
+        completed = completed.filter(x => x !== currentDay);
+      } else {
+        completed.push(currentDay);
+      }
+      localStorage.setItem("gospels43_done", JSON.stringify(completed));
+      render();
+    }
+
+    function prevDay() { if (currentDay > 1) { currentDay--; render(); } }
+    function nextDay() { if (currentDay < 43) { currentDay++; render(); } }
+
+    function toggleTheme() {
+      theme = theme === "light" ? "dark" : "light";
+      localStorage.setItem("gospels43_theme", theme);
+      applyTheme();
+    }
+    function applyTheme() { document.documentElement.setAttribute("data-theme", theme); }
+
+    function changeFont(delta) {
+      fontSize = Math.min(26, Math.max(15, fontSize + delta));
+      localStorage.setItem("gospels43_font", fontSize);
+      applyFont();
+    }
+    function applyFont() {
+      document.documentElement.style.setProperty("--font-size", `${fontSize}px`);
+    }
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js");
+      });
+    }
+
+    let deferredPrompt;
+    const installBanner = document.getElementById("installBanner");
+    const installBtn = document.getElementById("installBtn");
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBanner.style.display = "flex";
+    });
+
+    installBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBanner.style.display = "none";
+    });
+
+    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+    if (isIos && !isStandalone) {
+      document.getElementById("iosHint").style.display = "block";
+    }
+  </script>
+</body>
+</html>
